@@ -1,0 +1,46 @@
+{
+  "name": "testing-react",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview",
+    "deps:upgrade": "ncu -u && npm i",
+    "test": "jest"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "effector": "^22.1.2",
+    "effector-react": "^22.0.4",
+    "history": "^5.1.0",
+    "jotai": "^1.4.3",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^6.0.2",
+    "valtio": "^1.2.6"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "@babel/preset-react": "^7.16.0",
+    "@babel/preset-typescript": "^7.16.0",
+    "@testing-library/dom": "^8.11.1",
+    "@testing-library/jest-dom": "^5.15.0",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.0.2",
+    "@types/react": "^17.0.34",
+    "@types/react-dom": "^17.0.11",
+    "@vitejs/plugin-react": "^1.0.8",
+    "babel-jest": "^27.3.1",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^27.3.1",
+    "msw": "^0.35.0",
+    "npm-check-updates": "^12.0.2",
+    "ts-node": "^10.4.0",
+    "tslib": "^2.3.1",
+    "typescript": "^4.4.4",
+    "vite": "^2.6.14"
+  }
+}
