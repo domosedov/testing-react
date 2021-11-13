@@ -1,7 +1,8 @@
 import * as React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { fork } from "effector";
-import { Provider } from "effector-react/scope";
+import { Provider as EffectorProvider } from "effector-react/scope";
+import { Provider as JotaiProvider } from "jotai";
 import {
   render as originalRender,
   RenderOptions,
@@ -10,14 +11,27 @@ import {
 import user from "@testing-library/user-event";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
-import App from "./App";
+import * as faker from "faker";
+import App, { Todo } from "./App";
+import { atomScope, count } from "./count_atom";
+
+const todos: Todo[] = new Array(100).fill(null).map(() => ({
+  id: faker.datatype.number(),
+  title: faker.name.title(),
+  completed: faker.datatype.boolean(),
+  userId: faker.datatype.number(),
+}));
 
 const server = setupServer(
   rest.get("https://jsonplaceholder.typicode.com/todos", (req, res, ctx) => {
     const query = req.url.searchParams;
-    const _limit = query.get("_limit");
 
-    return res(ctx.json([{ id: 1, title: "test" }]));
+    const _limit = Number(query.get("_limit") ?? 0);
+    const _start = Number(query.get("_start") ?? 0);
+
+    const data = todos.slice(_start, _start + _limit);
+
+    return res(ctx.json(data));
   })
 );
 
@@ -29,7 +43,7 @@ const AllProviders: React.FC = ({ children }) => {
   const scope = fork();
   return (
     <MemoryRouter initialEntries={["/about"]}>
-      <Provider value={scope}>{children}</Provider>
+      <EffectorProvider value={scope}>{children}</EffectorProvider>
     </MemoryRouter>
   );
 };
@@ -61,9 +75,33 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(getByText(/HomePage/)).toBeInTheDocument();
-      expect(getAllByRole("listitem")).toHaveLength(1);
-      expect(getByText(/Todo List/)).toBeInTheDocument();
-      debug();
+      expect(getAllByRole("listitem")).toHaveLength(5);
     });
+
+    const loadMoreButton = getByRole("button");
+
+    user.click(loadMoreButton);
+
+    expect(getByText(/Loading/)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(getAllByRole("listitem")).toHaveLength(10);
+    });
+  });
+
+  it("Jotai Page", () => {
+    const { getAllByRole, getByRole, getByText } = render(<App />);
+    const links = getAllByRole("link");
+    const link = links.find((link) => link.textContent === "Jotai");
+    user.click(link!);
+
+    expect(getByRole("heading")).toHaveTextContent(/JotaiPage/);
+
+    const incButton = getByRole("button");
+    user.click(incButton);
+    user.click(incButton);
+    user.click(incButton);
+
+    expect(getByRole("paragraph")).toHaveTextContent(/Count: 3/);
   });
 });
