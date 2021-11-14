@@ -2,7 +2,7 @@ import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
   resetMocks: true,
-  setupFilesAfterEnv: ["@testing-library/jest-dom"],
+  setupFilesAfterEnv: ["@testing-library/jest-dom", "jest-axe/extend-expect"],
   testEnvironment: "jsdom",
   moduleNameMapper: {
     "\\.(css|less|sass|scss)$": "identity-obj-proxy",

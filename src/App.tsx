@@ -6,15 +6,29 @@ import { useAtom, Provider } from "jotai";
 import * as model from "./model";
 import { count as countAtom, atomScope } from "./count_atom";
 import { power } from "./utils";
+import MyWorker from "./my_worker?worker";
 
 const Layout: React.FC = () => {
+  const workerRef = React.useRef<Worker>();
+  const [result, setResult] = React.useState(0);
+
+  React.useEffect(() => {
+    workerRef.current = new MyWorker();
+    workerRef.current.addEventListener("message", (message) => {
+      setResult(() => message.data);
+    });
+  }, []);
+
   return (
     <div>
       <header>
+        <h1>Result: {result}</h1>
+        <button onClick={() => workerRef.current?.postMessage(2)}>WORK!</button>
         <nav>
           <Link to="/">Home</Link>
           <Link to="/about">About</Link>
           <Link to="/jotai">Jotai</Link>
+          <Link to="/valtio">Valtio</Link>
         </nav>
       </header>
       <br />
@@ -119,6 +133,8 @@ export const Jotai: React.FC = () => {
   );
 };
 
+const Valtio = React.lazy(() => import("./valtio"));
+
 const App: React.FC = () => {
   return (
     <Routes>
@@ -126,6 +142,14 @@ const App: React.FC = () => {
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="jotai" element={<Jotai />} />
+        <Route
+          path="valtio"
+          element={
+            <React.Suspense fallback={<div>Ho-ho</div>}>
+              <Valtio />
+            </React.Suspense>
+          }
+        />
       </Route>
     </Routes>
   );
